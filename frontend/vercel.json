@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "regions": ["sin1"],
+  "env": {
+    "NEXT_PUBLIC_API_URL": {
+      "description": "The public URL of your Render backend (e.g. https://catalyst-backend.onrender.com)",
+      "required": true
+    }
+  }
+}

@@ -1,0 +1,60 @@
+// Prisma schema for Catalyst (Prisma v7 format)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Job {
+  id          String   @id @default(cuid())
+  title       String
+  rawJd       String
+  parsedJd    String
+  createdAt   DateTime @default(now())
+  sessions    OutreachSession[]
+  shortlist   ShortlistedCandidate[]
+}
+
+model ShortlistedCandidate {
+  id               String   @id @default(cuid())
+  jobId            String
+  candidateId      String
+  candidateName    String
+  currentRole      String
+  currentCompany   String
+  matchScore       Float
+  matchExplanation String
+  matchBreakdown   String
+  interestScore    Float?
+  blendedScore     Float?
+  outreachStatus   String   @default("pending")
+  createdAt        DateTime @default(now())
+  job              Job      @relation(fields: [jobId], references: [id])
+}
+
+model OutreachSession {
+  id            String        @id @default(cuid())
+  jobId         String
+  candidateId   String
+  candidateName String
+  mode          String        @default("auto")
+  status        String        @default("active")
+  interestScore Float?
+  evaluation    String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  messages      ChatMessage[]
+  job           Job           @relation(fields: [jobId], references: [id])
+}
+
+model ChatMessage {
+  id        String          @id @default(cuid())
+  sessionId String
+  role      String
+  content   String
+  createdAt DateTime        @default(now())
+  session   OutreachSession @relation(fields: [sessionId], references: [id])
+}

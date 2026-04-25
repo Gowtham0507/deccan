@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  /* Brand Colors */
+  --brand-purple: #7C3AED;
+  --brand-purple-light: #A78BFA;
+  --brand-purple-dark: #5B21B6;
+  --brand-orange: #F97316;
+  --brand-orange-light: #FB923C;
+  --brand-cream: #FEF3C7;
+  --brand-cream-light: #FFFBEB;
+
+  /* Neutrals */
+  --black: #0A0A0F;
+  --black-1: #0F0F17;
+  --black-2: #16161F;
+  --black-3: #1E1E2A;
+  --black-4: #252535;
+  --gray-1: #3A3A50;
+  --gray-2: #52526E;
+  --gray-3: #8888A8;
+  --gray-4: #AEAEC8;
+  --white: #F8F8FF;
+  --white-soft: #E8E8F0;
+
+  /* Semantic */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --info: #3B82F6;
+
+  /* Typography */
+  --font-body: 'Inter', sans-serif;
+  --font-display: 'Syne', sans-serif;
+
+  /* Spacing */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
+  --shadow-purple: 0 8px 32px rgba(124,58,237,0.25);
+  --shadow-orange: 0 8px 32px rgba(249,115,22,0.25);
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--black);
+  color: var(--white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--black-2); }
+::-webkit-scrollbar-thumb { background: var(--gray-1); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand-purple); }
+
+/* Selection */
+::selection { background: rgba(124,58,237,0.3); color: var(--white); }
+
+/* Focus */
+:focus-visible { outline: 2px solid var(--brand-purple); outline-offset: 3px; border-radius: var(--radius-sm); }
+
+/* Utility */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
