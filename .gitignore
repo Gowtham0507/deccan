@@ -1,0 +1,16 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+chroma_db/
+*.db
+.DS_Store
+.idea/
+.vscode/
+node_modules/
+.next/
+out/
+dist/
+*.log
+.vercel/
