@@ -114,7 +114,7 @@ def send_form_invitation(
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
         # Using Gmail App Password to bypass Resend restrictions
-        server.login("saigowtham05peddinti@gmail.com", "tttxjjwwngjwoutu")
+        server.login("saigowtham05peddinti@gmail.com", "jrmehffrrogwivrp")
         server.send_message(msg)
         server.quit()
         return {"id": str(uuid.uuid4()), "status": "sent"}
