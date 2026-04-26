@@ -1,13 +1,14 @@
 """
-Email service using Resend.
-Sends branded screening form invitations to candidates.
-Falls back to a console log if no API key is set (dev mode).
+Email service using Gmail SMTP.
+Sends branded screening form invitations to candidates to any email address.
 """
-import resend
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import uuid
 from app.config import get_settings
 
 settings = get_settings()
-
 
 def send_form_invitation(
     candidate_email: str,
@@ -15,15 +16,8 @@ def send_form_invitation(
     job_title: str,
     session_id: str,
 ) -> dict:
-    """Send a branded screening form invitation email."""
+    """Send a branded screening form invitation email using Gmail SMTP."""
     form_url = f"{settings.app_url}/form/{session_id}"
-
-    # Dev fallback — no API key
-    if not settings.resend_api_key:
-        print(f"[DEV] Would send email to {candidate_email} → {form_url}")
-        return {"id": "dev-mode", "status": "simulated"}
-
-    resend.api_key = settings.resend_api_key
 
     html_body = f"""
 <!DOCTYPE html>
@@ -110,14 +104,20 @@ def send_form_invitation(
 </html>
 """
 
+    msg = MIMEMultipart()
+    msg['From'] = "Catalyst Talent <saigowtham05peddinti@gmail.com>"
+    msg['To'] = candidate_email
+    msg['Subject'] = f"You've been shortlisted — {job_title} Screening Form"
+    msg.attach(MIMEText(html_body, 'html'))
+
     try:
-        response = resend.Emails.send({
-            "from": "Catalyst Talent <onboarding@resend.dev>",
-            "to": [candidate_email],
-            "subject": f"You've been shortlisted — {job_title} Screening Form",
-            "html": html_body,
-        })
-        return {"id": response.get("id", ""), "status": "sent"}
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        # Using Gmail App Password to bypass Resend restrictions
+        server.login("saigowtham05peddinti@gmail.com", "tttxjjwwngjwoutu")
+        server.send_message(msg)
+        server.quit()
+        return {"id": str(uuid.uuid4()), "status": "sent"}
     except Exception as e:
         print(f"[EMAIL ERROR] {e}")
         raise
