@@ -1,142 +1,121 @@
-# Catalyst — AI-Powered Talent Scouting & Engagement Agent
+# Catalyst Talent Platform
 
-> Hackathon submission for **Catalyst** by Deccan AI — April 2026
+Catalyst is a full-stack, AI-driven talent scouting and recruitment platform. It automates the extraction of job requirements, ranks candidates using mathematical vector search, and conducts initial candidate outreach via automated email sequences.
 
----
+For an in-depth technical overview, please refer to the [DOCUMENTATION.md](./DOCUMENTATION.md).
 
-## 🚀 What It Does
+## Features
 
-Catalyst is a full-stack AI agent system that:
+- **Automated Job Parsing:** Utilizes large language models to extract strict requirements (skills, experience, location) from unstructured text.
+- **Vector-Based Candidate Matching:** Employs an in-memory TF-IDF and Cosine Similarity engine (Scikit-Learn) for high-precision, low-latency candidate scoring.
+- **Production Email Outreach:** Integrates with the Resend API to dispatch branded emails containing secure, session-based screening forms.
+- **Real-Time AI Evaluation:** Scores candidate responses instantly to calculate an interest score and final recommendation.
+- **Cross-Platform Synchronization:** Recruiter dashboards update asynchronously the moment a candidate submits their screening form.
 
-1. **Parses** a raw Job Description using **Google Gemini 1.5 Flash** — extracting structured skills, experience, domain, location, and salary requirements.
-2. **Discovers** matching candidates via **semantic vector search** (ChromaDB + sentence-transformers embeddings).
-3. **Scores** each candidate with an **LLM explainability report** — Match Score (0–100) with breakdown by skills, experience, domain, and location.
-4. **Engages** candidates via a **simulated conversation** powered by **Groq Llama-3 70B** — a Recruiter AI and a Candidate AI persona talk in real-time.
-5. **Evaluates interest** after the conversation, assigning an **Interest Score (0–100)** with signals, red flags, and a Proceed/Consider/Pass recommendation.
-6. **Ranks** the final shortlist by a blended score (60% Match + 40% Interest).
+## Technology Stack
 
----
+- **Frontend:** Next.js 16 (App Router), React, TypeScript, Tailwind CSS, Zustand
+- **Backend:** Python 3.11, FastAPI, Scikit-Learn
+- **Database:** SQLite via Prisma ORM
+- **AI Models:** Llama 3 (via Groq), Google Gemini
+- **Email Infrastructure:** Resend API
+- **Deployment:** Vercel (Frontend), Render (Backend)
 
-## 🛠 Tech Stack
+## Project Structure
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 16 (App Router), TypeScript, Tailwind CSS, Framer Motion, Zustand |
-| Backend | Python 3.10, FastAPI, SSE (real-time streaming) |
-| LLM — Parsing & Scoring | Google Gemini 1.5 Flash (free tier) |
-| LLM — Conversation | Groq Llama-3 70B (free tier, 800 tok/s) |
-| Vector Search | ChromaDB + sentence-transformers (`all-MiniLM-L6-v2`) |
-| AI Framework | LangChain, LangChain-Groq, LangChain-Google-GenAI |
-
----
-
-## 📁 Project Structure
-
-```
+```text
 deccan/
-├── frontend/          # Next.js 16 app
+├── frontend/          # Next.js Application
+│   ├── prisma/        # Database schema and SQLite file
 │   └── src/
-│       ├── app/           # Pages (layout, page)
-│       ├── components/    # UI components
-│       ├── store/         # Zustand global state
-│       └── lib/           # API client
-└── backend/           # FastAPI Python app
-    └── app/
-        ├── main.py        # FastAPI entry point
-        ├── models.py      # Pydantic models
-        ├── config.py      # Settings (pydantic-settings)
-        ├── data/          # Mock candidate profiles
-        ├── routers/       # API routers (jd, match, outreach, candidates)
-        └── services/      # AI services (gemini, groq, vector store)
+│       ├── app/       # Next.js Pages and API Routes
+│       ├── components/# UI Components
+│       ├── lib/       # Prisma Client and API utility
+│       └── store/     # Zustand Global State
+└── backend/           # FastAPI Application
+    ├── app/
+    │   ├── main.py    # FastAPI Application Entry
+    │   ├── routers/   # API Endpoints
+    │   ├── services/  # LLM, Vector Search, and Email Services
+    │   └── data/      # Candidate Database
+    └── requirements.txt
 ```
 
----
-
-## ⚙️ Setup Instructions
+## Local Development Setup
 
 ### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- A free **Groq API key** → https://console.groq.com
-- A free **Google Gemini API key** → https://aistudio.google.com
+- Node.js (v18 or higher)
+- Python (v3.10 or higher)
+- Groq API Key (https://console.groq.com)
+- Resend API Key (https://resend.com)
 
-### 1. Backend Setup
+### 1. Backend Configuration
+Navigate to the backend directory, install the required packages, and start the FastAPI server.
 
 ```bash
-cd d:\deccan
-
-# Activate virtual environment (already created)
-.\venv\Scripts\activate
-
-# Fill in your API keys
 cd backend
-copy .env.example .env
-# Edit .env with your GROQ_API_KEY and GEMINI_API_KEY
+python -m venv venv
+# On Windows: venv\Scripts\activate
+# On Mac/Linux: source venv/bin/activate
 
-# Start the FastAPI server
+pip install -r requirements.txt
+```
+
+Create a `.env` file in the `backend/` directory with the following variables:
+```text
+GROQ_API_KEY=your_groq_api_key_here
+RESEND_API_KEY=your_resend_api_key_here
+APP_URL=http://localhost:3000
+```
+
+Start the backend server:
+```bash
 uvicorn app.main:app --reload --port 8000
 ```
 
-### 2. Frontend Setup
+### 2. Frontend Configuration
+Open a new terminal window, navigate to the frontend directory, and start the Next.js development server.
 
 ```bash
-cd d:\deccan\frontend
+cd frontend
+npm install
+npx prisma generate
+npx prisma db push
+```
+
+Create a `.env` file in the `frontend/` directory with the following variable:
+```text
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+Start the frontend server:
+```bash
 npm run dev
 ```
 
-Open http://localhost:3000
+Navigate to `http://localhost:3000` in your browser to access the application.
 
----
+## Deployment Guide
 
-## 🎯 Usage Flow
+The application is architected to be deployed across two separate environments: Vercel for the frontend and Render for the backend.
 
-1. **Scout Tab** → Paste a Job Description or click "Load Sample JD"
-2. Click **"Scout Talent"** — watch the 3-stage pipeline run in real-time
-3. **Shortlist Tab** → View ranked candidates with Match Scores and AI explanations
-4. Click **"Engage"** on any candidate → opens the **Engagement Arena**
-5. In the Engagement Arena:
-   - Toggle **Auto-Pilot** (default) to watch AI Recruiter + AI Candidate converse automatically
-   - Toggle to **Manual** to take over and type your own recruiter messages
-   - Click **"Evaluate Interest →"** to generate the Interest Score and final recommendation
+### Backend Deployment (Render)
+1. Create a new Web Service on Render and connect your GitHub repository.
+2. Set the **Root Directory** to `backend`.
+3. Set the **Build Command** to: `pip install -r requirements.txt`
+4. Set the **Start Command** to: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+5. Add the following Environment Variables:
+   - `GROQ_API_KEY`: Your Groq API Key
+   - `RESEND_API_KEY`: Your Resend API Key
+   - `APP_URL`: The temporary or final URL of your Vercel frontend.
 
----
+### Frontend Deployment (Vercel)
+1. Import your GitHub repository into Vercel.
+2. Set the **Root Directory** to `frontend`.
+3. The Build Command (`npm run build`) and Install Command will be automatically detected.
+4. Add the following Environment Variable:
+   - `NEXT_PUBLIC_API_URL`: The deployed URL of your Render backend (e.g., `https://deccan-api.onrender.com`).
+5. Deploy the application.
 
-## 🏗 Architecture
-
-```
-[Recruiter] → pastes JD
-     ↓
-[JD Parser Agent] (Gemini 1.5 Flash)
-     ↓ Structured ParsedJD
-[Vector Search] (ChromaDB + MiniLM)
-     ↓ Top 10 candidates
-[Scoring Agent] (Gemini 1.5 Flash)
-     ↓ Match Score + Explanation per candidate
-[Outreach Agent] (Groq Llama-3 70B)
-     ├── Recruiter Persona (LLM)
-     └── Candidate Persona (LLM with hidden profile)
-          ↓ Chat transcript (streamed via SSE)
-[Evaluator Agent] (Gemini 1.5 Flash)
-     ↓ Interest Score + Recommendation
-[Final Shortlist] → Blended Score (60% Match + 40% Interest)
-```
-
----
-
-## 📊 Sample Input / Output
-
-**Input JD:** Senior ML Engineer — 5+ yrs, Python, PyTorch, MLOps, AWS, Bengaluru/Remote
-
-**Output (Top 3):**
-| Rank | Name | Match | Interest | Blended | Recommendation |
-|---|---|---|---|---|---|
-| 1 | Arjun Mehta | 94% | 87% | 91% | Proceed |
-| 2 | Karthik Rajan | 88% | 72% | 82% | Proceed |
-| 3 | Meera Pillai | 81% | 65% | 75% | Consider |
-
----
-
-## 👤 Author
-
-**Peddinti Venkata Sesha Sai Gowtham**
-GitHub: [@Gowtham0507](https://github.com/Gowtham0507)
+**Final Configuration:**
+Once the Vercel frontend is live, copy its production URL, return to your Render backend configuration, and update the `APP_URL` environment variable. This ensures that the automated emails generated by the backend direct candidates to the correct live frontend URL.
